@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    item android:id="@+id/action_search"
+    android:title="@string/menu_search"
+    android:icon="@drawable/ic_search" />
+    <item
+        android:id="@+id/bottom_nav_meet"
+        android:title="@string/menu_meet"
+        android:icon="?android:attr/textSelectHandle" />
+    <item
+        android:id="@+id/bottom_nav_do"
+        android:title="@string/menu_do"
+        android:icon="@android:drawable/ic_menu_agenda" />
+    <item
+
+        android:id="@+id/bottom_nav_ask"
+        android:title="@string/menu_ask"
+        android:icon="@android:drawable/sym_action_email" />
+</menu>
