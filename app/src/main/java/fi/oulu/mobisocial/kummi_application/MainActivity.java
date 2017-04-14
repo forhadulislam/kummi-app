@@ -47,10 +47,6 @@ public class MainActivity extends FragmentActivity {
 
 
         //Meet initialisations
-
-
-
-
     }
 
 
@@ -66,11 +62,7 @@ public class MainActivity extends FragmentActivity {
         switch (item.getItemId()) {
             case R.id.bottom_nav_meet:
                 MeetFragment meetFragment = new  MeetFragment();
-
-
                 EnableApplicationFeature(meetFragment);
-
-
                 break;
 
         }
@@ -80,10 +72,7 @@ public class MainActivity extends FragmentActivity {
             MenuItem menuItem = bottomNavigation.getMenu().getItem(i);
             menuItem.setChecked(menuItem.getItemId() == item.getItemId());
         }
-
         updateToolbarText(item.getTitle());
-
-
     }
 
     public void EnableApplicationFeature(Fragment frag) {
