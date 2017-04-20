@@ -68,6 +68,9 @@ public class MainActivity extends FragmentActivity {
                 AskFragment askFragment=new AskFragment();
                 EnableApplicationFeature(askFragment);
                 break;
+            case R.id.bottom_nav_do:
+                DoFragment doFragment=new DoFragment();
+                EnableApplicationFeature(doFragment);
 
         }
 
