@@ -81,8 +81,9 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState){
-        locationManager=(LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
+
         super.onActivityCreated(savedInstanceState);
+        locationManager=(LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
         mapFragment=(SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 

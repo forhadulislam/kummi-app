@@ -64,6 +64,10 @@ public class MainActivity extends FragmentActivity {
                 MeetFragment meetFragment = new  MeetFragment();
                 EnableApplicationFeature(meetFragment);
                 break;
+            case R.id.bottom_nav_ask:
+                AskFragment askFragment=new AskFragment();
+                EnableApplicationFeature(askFragment);
+                break;
 
         }
 
