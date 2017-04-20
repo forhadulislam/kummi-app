@@ -47,10 +47,6 @@ public class MainActivity extends FragmentActivity {
 
 
         //Meet initialisations
-
-
-
-
     }
 
 
@@ -66,12 +62,15 @@ public class MainActivity extends FragmentActivity {
         switch (item.getItemId()) {
             case R.id.bottom_nav_meet:
                 MeetFragment meetFragment = new  MeetFragment();
-
-
                 EnableApplicationFeature(meetFragment);
-
-
                 break;
+            case R.id.bottom_nav_ask:
+                AskFragment askFragment=new AskFragment();
+                EnableApplicationFeature(askFragment);
+                break;
+            case R.id.bottom_nav_do:
+                DoFragment doFragment=new DoFragment();
+                EnableApplicationFeature(doFragment);
 
         }
 
@@ -80,10 +79,7 @@ public class MainActivity extends FragmentActivity {
             MenuItem menuItem = bottomNavigation.getMenu().getItem(i);
             menuItem.setChecked(menuItem.getItemId() == item.getItemId());
         }
-
         updateToolbarText(item.getTitle());
-
-
     }
 
     public void EnableApplicationFeature(Fragment frag) {
