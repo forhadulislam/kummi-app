@@ -132,7 +132,7 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
         meetMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener(){
             @Override
             public void onMapLongClick(LatLng latLng){
-                //Todo: Add some dialog to list all online students
+
                 DialogInterface.OnClickListener listener=
                         new DialogInterface.OnClickListener(){
                             @Override
@@ -263,13 +263,7 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
     public void ZoomToLastKnowLocation(){
         try{
             if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+
 
                 AskLocationPermissions();
                 return;
@@ -289,20 +283,31 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
         }
     }
 
+    public void showBookMarks(){
+        try{
+            if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
+
+                AskLocationPermissions();
+                return;
+            }
+
+        }catch(Exception e){
+
+        }
+    }
+    public  void  showBookMarks(List){
+
+    }
     public Location GetLastKnowLocation(){
         try{
             if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+
 
                 AskLocationPermissions();
                 return null;
             }
+
+            //Todo: Check whether the location service  is actually enabled on the device
 
             Location last=LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             return last;
@@ -415,7 +420,10 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
                         }catch(Exception e){
                             e.printStackTrace();
                         }
-
+                        break;
+                    case MainActivity.REST_DB_BOOKMARKS:
+                        List<HashMap<String,String>> bookmarks=null;
+                        bookmarks=parser.parseUsers(new JSONArray(data));
 
                         break;
                 }
@@ -580,6 +588,24 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
 
             }
             return location;
+        }
+        public List<HashMap<String,String>> parseBookMarks(JSONArray lo) throws JSONException{
+            List<HashMap<String,String>> locations=new ArrayList<>();
+
+
+            for(int i=0;i<lo.length();i++){
+                HashMap<String,String> location=new HashMap<>();
+                JSONObject locationEntry=lo.getJSONObject(i);
+                location.put("_id",locationEntry.getString("_id"));
+                location.put("name",locationEntry.getString("name"));
+                location.put("description",locationEntry.getString("description"));
+                location.put("latitude",locationEntry.getString("latitude"));
+                location.put("longitude",locationEntry.getString("longitude"));
+
+                locations.add(location);
+            }
+
+            return locations;
         }
     }
 
