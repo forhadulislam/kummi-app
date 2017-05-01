@@ -12,18 +12,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.request.GetRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import model.Ask;
-
-
-
-
 
 public class AskFragment extends Fragment{
 
@@ -123,8 +117,6 @@ public class AskFragment extends Fragment{
     private List<HashMap<String,String>> dummyData(){
 
         //HttpClient httpclient = new DefaultHttpClient();
-        GetRequest response = Unirest.get("https://kummi-ad21.restdb.io/rest/ask");
-        response.header("x-apikey", "aae81c5685e95a5cc268116b0a6bb0353033f");
         //HttpResponse<String> stringHttpResponse = response.header("cache-control", "no-cache").asString();
 
         //Log.d("RestDB", "dummyData: " + stringHttpResponse);
