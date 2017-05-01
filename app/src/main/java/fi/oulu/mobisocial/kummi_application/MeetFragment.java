@@ -24,7 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import 	android.icu.text.SimpleDateFormat;
+import android.icu.text.SimpleDateFormat;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -47,15 +47,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import java.net.URLEncoder;
 import java.text.ParseException;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 //</editor-fold>
 
 /**
@@ -65,11 +68,7 @@ import java.util.List;
 public class MeetFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
     public SupportMapFragment mapFragment;
     public GoogleApiClient mGoogleApiClient;
-    public static final String REST_DB_API_KEY="aae81c5685e95a5cc268116b0a6bb0353033f";
-    public static final String REST_DB_USERS_URL="https://kummi-ad21.restdb.io/rest/users";
-    public static final String REST_DB_READ_USER_LOCATION="restdbuserLocationRead";
-    public static final String REST_DB_READ_USERS="restdbusersRead";
-    public static final String REST_DB_USER_LOCATION_URL="https://kummi-ad21.restdb.io/rest/users/<UserId>/locations?sort=timeStamp&dir=-1&max=1";
+
 
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container,
@@ -133,17 +132,17 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
         meetMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener(){
             @Override
             public void onMapLongClick(LatLng latLng){
-                //Todo: Add some dialog to list all online students
+
                 DialogInterface.OnClickListener listener=
                         new DialogInterface.OnClickListener(){
                             @Override
                             public void onClick(DialogInterface dialog,int which){
 
                                 HashMap<String,String> student=studentList.get(which);
-                                RestDBDataReader datareader=new RestDBDataReader(REST_DB_READ_USER_LOCATION);
+                                RestDBDataReader datareader=new RestDBDataReader(MainActivity.REST_DB_READ_USER_LOCATION);
                                 String studentName=String.format("%s, %s",student.get("firstname"),student.get("otherNames"));
                                 datareader.setStudent(studentName);
-                                String url=REST_DB_USER_LOCATION_URL.replace("<UserId>",student.get("_id"));
+                                String url=MainActivity.REST_DB_USER_LOCATION_URL.replace("<UserId>",student.get("_id"));
                                 datareader.execute(url);
 
                             }
@@ -221,13 +220,13 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
 
     public void loadStudentsData(){
 
-        RestDBDataReader dataReader=new RestDBDataReader(REST_DB_READ_USERS);
-        dataReader.execute(REST_DB_USERS_URL);
+        RestDBDataReader dataReader=new RestDBDataReader(MainActivity.REST_DB_READ_USERS);
+        dataReader.execute(MainActivity.REST_DB_USERS_URL);
 
     }
 
     public void getStudentLocation(String url){
-        RestDBDataReader dataReader=new RestDBDataReader(REST_DB_READ_USER_LOCATION);
+        RestDBDataReader dataReader=new RestDBDataReader(MainActivity.REST_DB_READ_USER_LOCATION);
         dataReader.execute(url);
     }
 
@@ -241,7 +240,7 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
 
         //DateFormat fmt=new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ"); if(dateString.contains("T")) dateString=dateString.replace('T',' '); if(dateString.contains("Z")) dateString=dateString.replace("Z","+0000"); else dateString=dateString.substring(0,dateString.lastIndexOf(':'))+dateString.substring(dateString.lastIndexOf(':')+1);
         try{
-            String date=dateString.replaceAll("T", " ");
+            String date=dateString.replaceAll("T"," ");
 
             return simpleDateFormat.parse(date);
         }catch(ParseException e){
@@ -264,13 +263,7 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
     public void ZoomToLastKnowLocation(){
         try{
             if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+
 
                 AskLocationPermissions();
                 return;
@@ -290,20 +283,31 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
         }
     }
 
+    public void showBookMarks(){
+        try{
+            if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
+
+                AskLocationPermissions();
+                return;
+            }
+
+        }catch(Exception e){
+
+        }
+    }
+    public  void  showBookMarks(List){
+
+    }
     public Location GetLastKnowLocation(){
         try{
             if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+
 
                 AskLocationPermissions();
                 return null;
             }
+
+            //Todo: Check whether the location service  is actually enabled on the device
 
             Location last=LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             return last;
@@ -367,8 +371,8 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
             String data="";
             try{
                 HashMap<String,String> headers=new HashMap<>();
-                headers.put("x-apiKey",REST_DB_API_KEY);
-                MapHttpConnection http=new MapHttpConnection();
+                headers.put("x-apiKey",MainActivity.REST_DB_API_KEY);
+                KummiHttpConnection http=new KummiHttpConnection();
                 data=http.readUrl(url[0],headers);
             }catch(Exception e){
                 // TODO: handle exception
@@ -376,7 +380,6 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
             }
             return data;
         }
-
 
 
         @RequiresApi(api=Build.VERSION_CODES.N)
@@ -388,13 +391,13 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
 
                 JSONParser parser=new JSONParser();
                 switch(action){
-                    case REST_DB_READ_USERS:
+                    case MainActivity.REST_DB_READ_USERS:
                         JSONArray array=null;
                         List<HashMap<String,String>> users=null;
                         array=new JSONArray(data);
                         studentList=parser.parseUsers(array);
                         break;
-                    case REST_DB_READ_USER_LOCATION:
+                    case MainActivity.REST_DB_READ_USER_LOCATION:
                         JSONArray lo=new JSONArray(data);
                         HashMap<String,String> location=parser.parseLocation(lo);
                         if(location.size()>0){
@@ -417,7 +420,10 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
                         }catch(Exception e){
                             e.printStackTrace();
                         }
-
+                        break;
+                    case MainActivity.REST_DB_BOOKMARKS:
+                        List<HashMap<String,String>> bookmarks=null;
+                        bookmarks=parser.parseUsers(new JSONArray(data));
 
                         break;
                 }
@@ -462,7 +468,7 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
             // TODO Auto-generated method stub
             String data="";
             try{
-                MapHttpConnection http=new MapHttpConnection();
+                KummiHttpConnection http=new KummiHttpConnection();
                 data=http.readUrl(url[0],null);
             }catch(Exception e){
                 // TODO: handle exception
@@ -479,44 +485,7 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
     }
 
 
-    private class MapHttpConnection{
-        public String readUrl(String mapsApiDirectionsUrl,HashMap<String,String> headers) throws IOException{
-            String data="";
-            InputStream istream=null;
-            HttpURLConnection urlConnection=null;
 
-            try{
-                URL url=new URL(mapsApiDirectionsUrl);
-                urlConnection=(HttpURLConnection)url.openConnection();
-                if(headers!=null){
-                    if(urlConnection!=null){
-                        for(String key : headers.keySet()){
-                            urlConnection.setRequestProperty(key,headers.get(key));
-                        }
-                    }
-                }
-                urlConnection.connect();
-                istream=urlConnection.getInputStream();
-                BufferedReader br=new BufferedReader(new InputStreamReader(istream));
-                StringBuffer sb=new StringBuffer();
-                String line="";
-                while((line=br.readLine())!=null){
-                    sb.append(line);
-                }
-                data=sb.toString();
-                br.close();
-
-
-            }catch(Exception e){
-                Log.d("kummi",e.toString());
-            }finally{
-                istream.close();
-                urlConnection.disconnect();
-            }
-            return data;
-
-        }
-    }
 
     private class JSONParser{
         public List<List<HashMap<String,String>>> parsePath(JSONObject jObject){
@@ -610,7 +579,7 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
 
         public HashMap<String,String> parseLocation(JSONArray lo) throws JSONException{
             HashMap<String,String> location=new HashMap<>();
-            if( lo.length()>0){
+            if(lo.length()>0){
                 JSONObject entry=lo.getJSONObject(0);
                 location.put("_id",entry.getString("_id"));
                 location.put("latitude",entry.getString("latitude"));
@@ -619,6 +588,24 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
 
             }
             return location;
+        }
+        public List<HashMap<String,String>> parseBookMarks(JSONArray lo) throws JSONException{
+            List<HashMap<String,String>> locations=new ArrayList<>();
+
+
+            for(int i=0;i<lo.length();i++){
+                HashMap<String,String> location=new HashMap<>();
+                JSONObject locationEntry=lo.getJSONObject(i);
+                location.put("_id",locationEntry.getString("_id"));
+                location.put("name",locationEntry.getString("name"));
+                location.put("description",locationEntry.getString("description"));
+                location.put("latitude",locationEntry.getString("latitude"));
+                location.put("longitude",locationEntry.getString("longitude"));
+
+                locations.add(location);
+            }
+
+            return locations;
         }
     }
 
