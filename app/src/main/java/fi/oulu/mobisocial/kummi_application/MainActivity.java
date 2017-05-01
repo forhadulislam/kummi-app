@@ -33,6 +33,7 @@ public class MainActivity extends FragmentActivity{
     public static final String REST_DB_READ_USERS="restdbusersRead";
     public static final String REST_DB_REGISTER="restdbregister";
     public static final String REST_DB_LOGIN="restdblogin";
+    public static final String REST_DB_BOOKMARKS="bookmarks";
     public static final String REST_DB_USER_LOCATION_URL="https://kummi-ad21.restdb.io/rest/users/<UserId>/locations?sort=timeStamp&dir=-1&max=1";
     public static SharedPreferences appSharePreference;
 
