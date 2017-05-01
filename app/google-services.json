@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "919682616495",
+    "firebase_url": "https://ask-kummi.firebaseio.com",
+    "project_id": "ask-kummi",
+    "storage_bucket": "ask-kummi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:919682616495:android:c2cc61b71cda9430",
+        "android_client_info": {
+          "package_name": "fi.oulu.mobisocial.kummi_application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "919682616495-av9rti6o2ih36pk46i819iskk2q47k0o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fi.oulu.mobisocial.kummi_application",
+            "certificate_hash": "98c3d87c0c4eea1667bbf5c19741b6b32b76f19a"
+          }
+        },
+        {
+          "client_id": "919682616495-bi0ruh180qmmfcf4gek8avgtiau65on2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1C3R8remeA2EDXUtZeo8fWtnCSDGAwcQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "919682616495-bi0ruh180qmmfcf4gek8avgtiau65on2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
