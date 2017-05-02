@@ -3,9 +3,7 @@ package fi.oulu.mobisocial.kummi_application;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -18,9 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.nio.channels.NonWritableChannelException;
 import java.util.HashMap;
-import java.util.UUID;
 
 public class LoginActivity extends Activity{
 
@@ -196,7 +192,6 @@ public class LoginActivity extends Activity{
                     }catch(IOException e){
 
                     }
-
             }
 
             return data;

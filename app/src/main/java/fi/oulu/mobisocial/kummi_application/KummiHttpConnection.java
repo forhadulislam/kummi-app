@@ -92,6 +92,5 @@ public class KummiHttpConnection{
             urlConnection.disconnect();
         }
         return data;
-
     }
 }
