@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import android.icu.text.SimpleDateFormat;
 
@@ -68,6 +69,7 @@ import java.util.Map;
 public class MeetFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
     public SupportMapFragment mapFragment;
     public GoogleApiClient mGoogleApiClient;
+    private ImageButton bookmarksButton;
 
 
     @Override
@@ -83,7 +85,9 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
 
         super.onActivityCreated(savedInstanceState);
         locationManager=(LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
+        bookmarksButton=(ImageButton)getView().findViewById(R.id.bookmarksButton);
         mapFragment=(SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.map);
+
         mapFragment.getMapAsync(this);
 
         if(mGoogleApiClient==null){
@@ -93,6 +97,14 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
                     .addApi(LocationServices.API)
                     .build();
         }
+
+        bookmarksButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                showStudentsDialoag();
+            }
+        });
+
     }
 
     @Override
@@ -133,31 +145,7 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
             @Override
             public void onMapLongClick(LatLng latLng){
 
-                DialogInterface.OnClickListener listener=
-                        new DialogInterface.OnClickListener(){
-                            @Override
-                            public void onClick(DialogInterface dialog,int which){
-
-                                HashMap<String,String> student=studentList.get(which);
-                                RestDBDataReader datareader=new RestDBDataReader(MainActivity.REST_DB_READ_USER_LOCATION);
-                                String studentName=String.format("%s, %s",student.get("firstname"),student.get("otherNames"));
-                                datareader.setStudent(studentName);
-                                String url=MainActivity.REST_DB_USER_LOCATION_URL.replace("<UserId>",student.get("_id"));
-                                datareader.execute(url);
-
-                            }
-                        };
-
-                String[] studentName=new String[studentList.size()];
-                for(int i=0;i<studentList.size();i++){
-                    // LatLng latLong=students.get(i);
-                    HashMap<String,String> user=studentList.get(i);
-                    studentName[i]=String.format("%s, %s",user.get("firstname"),user.get("otherNames"));
-                }
-                AlertDialog dialog=new AlertDialog.Builder(getContext())
-                        .setTitle("Select who to meet")
-                        .setItems(studentName,listener)
-                        .show();
+                showStudentsDialoag();
             }
 
         });
@@ -165,6 +153,34 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
 
         loadStudentsData();
 
+    }
+
+    private void showStudentsDialoag(){
+        DialogInterface.OnClickListener listener=
+                new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog,int which){
+
+                        HashMap<String,String> student=studentList.get(which);
+                        RestDBDataReader datareader=new RestDBDataReader(MainActivity.REST_DB_READ_USER_LOCATION);
+                        String studentName=String.format("%s, %s",student.get("firstname"),student.get("otherNames"));
+                        datareader.setStudent(studentName);
+                        String url=MainActivity.REST_DB_USER_LOCATION_URL.replace("<UserId>",student.get("_id"));
+                        datareader.execute(url);
+
+                    }
+                };
+
+        String[] studentName=new String[studentList.size()];
+        for(int i=0;i<studentList.size();i++){
+            // LatLng latLong=students.get(i);
+            HashMap<String,String> user=studentList.get(i);
+            studentName[i]=String.format("%s, %s",user.get("firstname"),user.get("otherNames"));
+        }
+        AlertDialog dialog=new AlertDialog.Builder(getContext())
+                .setTitle("Select who to meet")
+                .setItems(studentName,listener)
+                .show();
     }
 
     @Override
@@ -257,6 +273,7 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
             gMap.getUiSettings().setIndoorLevelPickerEnabled(true);
             gMap.getUiSettings().setMyLocationButtonEnabled(true);
             gMap.getUiSettings().setIndoorLevelPickerEnabled(true);
+
         }
     }
 
@@ -295,9 +312,9 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
 
         }
     }
-    public  void  showBookMarks(List){
-
-    }
+//    public  void  showBookMarks(List){
+//
+//    }
     public Location GetLastKnowLocation(){
         try{
             if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){

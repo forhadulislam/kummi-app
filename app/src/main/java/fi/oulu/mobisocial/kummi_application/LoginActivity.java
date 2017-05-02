@@ -1,10 +1,14 @@
 package fi.oulu.mobisocial.kummi_application;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -18,27 +22,46 @@ import java.nio.channels.NonWritableChannelException;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class LoginActivity extends AppCompatActivity{
+public class LoginActivity extends Activity{
 
-    private Button loginButton,gotoRegisterButton;
+    private Button loginButton;
     private EditText usernameEditText, passwordEditText, firstNameEditText, othernamesEditText, emailEditText;
-    private TextView firstnameLabel, otherNamesLabel, emailLabel;
+    private TextView gotoRegisterTextView;
     private String providedUserName, providedPassword, providedFirstName, providedOtherName, providedEmail, providedUserId;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
+        //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+//        if (Build.VERSION.SDK_INT < 16) {
+//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        }
+//        View decorView = getWindow().getDecorView();
+//// Hide the status bar.
+//        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+//        decorView.setSystemUiVisibility(uiOptions);
+//// Remember that you should never show the action bar if the
+//// status bar is hidden, so hide that too if necessary.
+//       getActionBar().hide();
+        //actionBar.hide();
         loginButton=(Button)findViewById(R.id.loginButton);
-        gotoRegisterButton =(Button)findViewById(R.id.gotoRegister);
+        gotoRegisterTextView =(TextView)findViewById(R.id.gotoRegister);
 
         usernameEditText=(EditText)findViewById(R.id.usernameText);
         passwordEditText=(EditText)findViewById(R.id.passwordText);
 
 
-        gotoRegisterButton.setOnClickListener(new View.OnClickListener(){
+        gotoRegisterTextView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 Intent intent=new Intent(LoginActivity.this,RegisterActivity.class);

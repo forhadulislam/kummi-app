@@ -61,6 +61,12 @@ public class MainActivity extends FragmentActivity{
         if(!USER_LOGGED_IN){
             ShowLoginActivity();
         }
+        else{
+            //Enable default app feature
+            //DoFragment doFragment=new DoFragment();
+           // EnableApplicationFeature(doFragment);
+        }
+
 
     }
 
@@ -76,18 +82,22 @@ public class MainActivity extends FragmentActivity{
             case R.id.bottom_nav_meet:
                 MeetFragment meetFragment=new MeetFragment();
                 EnableApplicationFeature(meetFragment);
-                break;
+                return;
+                //break;
             case R.id.bottom_nav_ask:
                 AskFragment askFragment=new AskFragment();
                 EnableApplicationFeature(askFragment);
-                break;
+                return;
+                //break;
             case R.id.bottom_nav_do:
                 DoFragment doFragment=new DoFragment();
                 EnableApplicationFeature(doFragment);
+                return;
+                //break;
 
         }
 
-        // uncheck the other items.
+//        // uncheck the other items.
         for(int i=0;i<bottomNavigation.getMenu().size();i++){
             MenuItem menuItem=bottomNavigation.getMenu().getItem(i);
             menuItem.setChecked(menuItem.getItemId()==item.getItemId());
