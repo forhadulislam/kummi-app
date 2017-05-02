@@ -1,7 +1,6 @@
 package fi.oulu.mobisocial.kummi_application;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,13 +12,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ThreadFactory;
 
+import model.Ask;
 
 public class AskFragment extends Fragment{
 
@@ -32,6 +30,7 @@ public class AskFragment extends Fragment{
     public static final String MESSAGE_TYPE_INCOMING="incommingMessage";
     public static final String MESSAGE_TYPE_OUTGOING="outgoingMessage";
 
+    Ask askMessage;
     public AskFragment(){
         // Required empty public constructor
     }
@@ -87,6 +86,8 @@ public class AskFragment extends Fragment{
 
         });
 
+        askMessage = new Ask("123123", "nothing much");
+
     }
 
     @Override
@@ -100,7 +101,7 @@ public class AskFragment extends Fragment{
         HashMap<String,String> message=dataset.get(entry%dataset.size());
         askRecyclerViewAdaptor.insertItem(message);
 
-        /**
+        /*
         for(int i=0;i<dataset.size();i++){
             HashMap<String,String> entry=dataset.get(i);
             askRecyclerViewAdaptor.insertItem(entry,i);
@@ -114,14 +115,20 @@ public class AskFragment extends Fragment{
     }
 
     private List<HashMap<String,String>> dummyData(){
+
+        //HttpClient httpclient = new DefaultHttpClient();
+        //HttpResponse<String> stringHttpResponse = response.header("cache-control", "no-cache").asString();
+
+        //Log.d("RestDB", "dummyData: " + stringHttpResponse);
+
         ArrayList<HashMap<String,String>> dataset=new ArrayList<>();
         HashMap<String,String> message=new HashMap<>();
-        message.put("message","Hi");
+        message.put("message","Hi Kummi");
         message.put("messageType",MESSAGE_TYPE_OUTGOING);
         dataset.add(message);
 
         message=new HashMap<>();
-        message.put("message","Hi");
+        message.put("message","Howdy");
         message.put("messageType",MESSAGE_TYPE_INCOMING);
         dataset.add(message);
 
@@ -162,7 +169,6 @@ public class AskFragment extends Fragment{
     @Override
     public void onDetach(){
         super.onDetach();
-
     }
 
 

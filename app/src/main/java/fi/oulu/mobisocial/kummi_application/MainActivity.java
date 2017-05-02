@@ -53,6 +53,8 @@ public class MainActivity extends FragmentActivity{
         appSharePreference = PreferenceManager.getDefaultSharedPreferences(this);
 
 
+        //Meet initialisations
+
     }
 
     @Override
