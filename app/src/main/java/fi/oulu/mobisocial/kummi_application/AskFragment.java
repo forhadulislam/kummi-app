@@ -82,6 +82,8 @@ public class AskFragment extends Fragment{
         type_message_text = (EditText)view.findViewById(R.id.type_message_text);
 
         final int[] count={0};
+
+        // Message sending button
         sendMessageButton=(ImageView)view.findViewById(R.id.type_message_send);
         textMessage=(TextView)view.findViewById(R.id.type_message_text);
 
@@ -90,6 +92,12 @@ public class AskFragment extends Fragment{
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(textMessage, InputMethodManager.SHOW_IMPLICIT);
         getOnlineData();
+
+        /*
+
+            Setting onClick Listener on the message sending button
+
+         */
         sendMessageButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -97,9 +105,13 @@ public class AskFragment extends Fragment{
                 currentMessage = type_message_text.getText().toString().trim();
                 type_message_text.setText("");
 
-                askMessage = new Ask("123123", "nothing much");
+                //askMessage = new Ask("123123", "nothing much");
                 RequestQueue MyRequestQueue = null;
                 StringRequest MyStringRequest = null;
+
+                /*
+                    If there is any message then the message will be sent to the server
+                 */
                 if (currentMessage != null && !currentMessage.isEmpty()) {
                     String data = "";
                     KummiHttpConnection request = new KummiHttpConnection();
@@ -135,7 +147,9 @@ public class AskFragment extends Fragment{
                     })
 
                     {
-
+                        /*
+                            The headers
+                         */
                         @Override
                         public Map<String, String> getHeaders() throws AuthFailureError {
                             HashMap<String, String> headers = new HashMap<>();
@@ -145,7 +159,9 @@ public class AskFragment extends Fragment{
                             headers.put("cache-control", "no-cache");
                             return headers;
                         }
-
+                        /*
+                            The message parameters
+                         */
                         @Override
                         protected Map<String, String> getParams() throws AuthFailureError {
 
@@ -168,7 +184,6 @@ public class AskFragment extends Fragment{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
-
     }
 
     @Override
@@ -176,48 +191,9 @@ public class AskFragment extends Fragment{
         super.onAttach(context);
     }
 
-
-//    private void demola(int entry){
-//        List<HashMap<String,String>> dataset=dummyData();
-//        HashMap<String,String> message=dataset.get(entry%dataset.size());
-//        askRecyclerViewAdaptor.insertItem(message);
-//    }
-
-    /*private class AskDataProvider extends AsyncTask<String,Void,String> {
-
-        private String action;
-        public String askUrl = "https://kummi-ad21.restdb.io/rest/ask";
-
-        public AskDataProvider(String action){
-            this.action=action;
-        }
-
-        @Override
-        protected String doInBackground(String... strings){
-            String data="";
-            KummiHttpConnection request=new KummiHttpConnection();
-            try{
-                HashMap<String,String> headers=new HashMap<>();
-                headers.put("x-apiKey",MainActivity.REST_DB_API_KEY);
-                //data=request.postLogin(MainActivity.REST_DB_USERS_URL,strings[0],headers);
-                data=request.readUrl(askUrl,headers);
-            }catch(IOException e){
-                e.printStackTrace();
-            }
-
-
-            return data;
-        }
-
-        @Override
-        protected void onPostExecute(String s){
-            super.onPostExecute(s);
-            MainActivity.saveToSharedPreference(USER_ID,providedUserName);
-            MainActivity.saveToSharedPreference(MainActivity.PASSWORD_KEY,providedPassword);
-
-        }
-    }*/
-
+    /*
+        Fetch messages from online
+     */
     private void getOnlineData(){
 
         dummyData=new ArrayList<>();
@@ -234,9 +210,9 @@ public class AskFragment extends Fragment{
         MyStringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+
                 //This code is executed if the server responds, whether or not the response contains data.
                 //The String 'response' contains the server's response.
-                //Log.d("Response : ", response.toString());
 
                 try {
                     JSONArray jsonarr = new JSONArray(response);
@@ -250,9 +226,6 @@ public class AskFragment extends Fragment{
                         // get username
                         JSONObject userJson = jsonobj.getJSONObject("user");
                         String username = userJson.getString("username");
-
-                       // Log.d("Message : ", message.toString());
-                       // Log.d("userJson : ", userJson.toString());
 
                         HashMap<String,String> cmessage=new HashMap<>();
                         cmessage.put("message",message);
