@@ -123,7 +123,7 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
     private GoogleMap meetMap;
     private LocationManager locationManager;
     public HashMap<Integer,LatLng> students;
-    public List<HashMap<String,String>> studentList;
+    public static List<HashMap<String,String>> studentList;
     public static final int GEOLOCATION_PERMISSION_CODE=1234;
 
     @Override
@@ -504,7 +504,7 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
 
 
 
-    private class JSONParser{
+    public class JSONParser{
         public List<List<HashMap<String,String>>> parsePath(JSONObject jObject){
             List<List<HashMap<String,String>>> routes=new ArrayList<>();
             JSONArray jRoutes=null;
