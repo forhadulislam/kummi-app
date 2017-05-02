@@ -6,16 +6,25 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import model.Ask;
 
@@ -29,6 +38,9 @@ public class AskFragment extends Fragment{
     private TextView textMessage;
     public static final String MESSAGE_TYPE_INCOMING="incommingMessage";
     public static final String MESSAGE_TYPE_OUTGOING="outgoingMessage";
+
+    private EditText type_message_text;
+    private String currentMessage;
 
     Ask askMessage;
     public AskFragment(){
@@ -60,16 +72,19 @@ public class AskFragment extends Fragment{
         askRecyclerViewAdaptor=new AskRecyclerViewAdaptor(dummyData());
         recyclerView.setAdapter(askRecyclerViewAdaptor);
 
+        // Message box
+        type_message_text = (EditText)getView().findViewById(R.id.type_message_text);
+
         final int[] count={0};
         sendMessageButton=(ImageView)getView().findViewById(R.id.type_message_send);
         textMessage=(TextView)getView().findViewById(R.id.type_message_text);
         sendMessageButton.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(View view){
-                List<HashMap<String,String>> dataset=dummyData();
-                for(int i=0;i<dataset.size();i++){
-                    HashMap<String,String> entry=dataset.get(i);
-                    askRecyclerViewAdaptor.insertItemAt(entry,i);
+            public void onClick(View view) {
+                List<HashMap<String, String>> dataset = dummyData();
+                for (int i = 0; i < dataset.size(); i++) {
+                    HashMap<String, String> entry = dataset.get(i);
+                    askRecyclerViewAdaptor.insertItemAt(entry, i);
 
                     /**
                      HashMap<String,String> message=new HashMap<>();
@@ -82,11 +97,57 @@ public class AskFragment extends Fragment{
 
                 }
 
+                currentMessage = type_message_text.getText().toString().trim();
+
+                askMessage = new Ask("123123", "nothing much");
+                RequestQueue MyRequestQueue = null;
+                StringRequest MyStringRequest = null;
+                if (currentMessage != null && !currentMessage.isEmpty()) {
+                    String data = "";
+                    KummiHttpConnection request = new KummiHttpConnection();
+
+
+                    HashMap<String, String> headers = new HashMap<>();
+                    headers.put("x-apiKey", MainActivity.REST_DB_API_KEY);
+                    //data=request.postLogin(MainActivity.REST_DB_USERS_URL,strings[0],headers);
+                    Log.d("Message ", "onClick: " + currentMessage);
+
+
+                    /* New Code */
+                    MyRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+
+                    String url = "https://kummi-ad21.restdb.io/rest/ask";
+                    MyStringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                        @Override
+                    public void onResponse(String response) {
+                            //This code is executed if the server responds, whether or not the response contains data.
+                            //The String 'response' contains the server's response.
+                            Log.d("Response : ", response);
+                        }
+                    }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            //This code is executed if there is an error.
+                            Log.d("Error : ", error.toString());
+                        }
+                    }) {
+                        protected Map<String, String> getParams() {
+                            Map<String, String> MyData = new HashMap<String, String>();
+                            //Add the data you'd like to send to the server.
+                            MyData.put("user_id", "123123123");
+                            MyData.put("message", currentMessage);
+                            return MyData;
+                        }
+                        };
+                    }
+
+                    MyRequestQueue.add(MyStringRequest);
             }
+
 
         });
 
-        askMessage = new Ask("123123", "nothing much");
+
 
     }
 
