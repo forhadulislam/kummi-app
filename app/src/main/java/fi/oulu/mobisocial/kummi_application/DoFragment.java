@@ -2,6 +2,7 @@ package fi.oulu.mobisocial.kummi_application;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import android.Manifest;
 import android.app.Activity;
@@ -20,10 +21,12 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.util.Log;
@@ -53,18 +56,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import static android.content.Context.LOCATION_SERVICE;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link DoFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link DoFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class DoFragment extends Fragment implements View.OnClickListener {
 
     public DoFragment(){
@@ -79,10 +77,10 @@ public class DoFragment extends Fragment implements View.OnClickListener {
 
     private ListView listView;
     public static ArrayList<Task> arrayofTask = new ArrayList<Task>();
+    private static List <HashMap<String,String>> studentList;
     private Task task;
     public TaskAdapter adapter;
     private DatabaseHandler db;
-
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private AlertDialogManager alert = new AlertDialogManager();
@@ -133,6 +131,7 @@ public class DoFragment extends Fragment implements View.OnClickListener {
                 newTask();
             }
         });
+        loadStudentList();
         return view;
 
     }
@@ -178,7 +177,7 @@ public class DoFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    BroadcastReceiver locationReceiver = new BroadcastReceiver() {
+            BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             db = new DatabaseHandler(context);
@@ -198,6 +197,10 @@ public class DoFragment extends Fragment implements View.OnClickListener {
         }
     };
 
+    private void loadStudentList(){
+        RestDbProvider dbProvider=new RestDbProvider();
+        dbProvider.execute(MainActivity.REST_DB_USERS_URL);
+    }
     private void updateTaskList() {
         Log.d(TAG, "in updateTaskList");
         List<Task> tasks = db.getAllTasks();
@@ -224,7 +227,7 @@ public class DoFragment extends Fragment implements View.OnClickListener {
                 String info = "";
                 info = input.getText().toString();
                 task.setInfo(info);
-                askType();
+                pickStudent();
             }
         });
         alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
@@ -235,6 +238,7 @@ public class DoFragment extends Fragment implements View.OnClickListener {
         });
         alertDialog.show();
     }
+
     private void askType() {
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
         alertDialog.setTitle("Location or time alert?");
@@ -247,6 +251,26 @@ public class DoFragment extends Fragment implements View.OnClickListener {
             }
         });
         alertDialog.show();
+    }
+    private void pickStudent(){
+
+        String[] studentName=new String[studentList.size()];
+        for(int i=0;i<studentList.size();i++){
+            // LatLng latLong=students.get(i);
+            HashMap<String,String> user=studentList.get(i);
+            studentName[i]=String.format("%s, %s",user.get("firstname"),user.get("otherNames"));
+        }
+        DialogInterface.OnClickListener listener=
+                new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog,int which){
+                        askDate();
+                    }
+                };
+                android.support.v7.app.AlertDialog dialog=new android.support.v7.app.AlertDialog.Builder(getContext())
+                .setTitle("Select who to suggest the task to:")
+                .setItems(studentName,listener)
+                .show();
     }
 
     private void askDate() {
@@ -326,6 +350,42 @@ public class DoFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
 
     }
+
+    class  RestDbProvider extends AsyncTask<String,String,String>
+    {
+        @Override
+        protected String doInBackground(String... url) {
+            String data="";
+            try{
+                HashMap<String,String> headers=new HashMap<>();
+                headers.put("x-apiKey",MainActivity.REST_DB_API_KEY);
+                KummiHttpConnection http=new KummiHttpConnection();
+                data=http.readUrl(url[0],headers);
+            }catch(Exception e){
+                // TODO: handle exception
+                Log.d("Kummi",e.toString());
+            }
+            return data;
+
+        }
+
+        @Override
+        protected void onPostExecute(String data) {
+            super.onPostExecute(data);
+            JSONParser jsonParser=new JSONParser();
+            JSONArray array=null;
+            List<HashMap<String,String>> users=null;
+            try {
+                array=new JSONArray(data);
+                studentList = jsonParser.parseUsers(array);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+
 }
 
 
