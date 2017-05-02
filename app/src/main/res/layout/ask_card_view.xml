@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/cardview_shadow_end_color"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginTop="40dp">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
@@ -50,6 +50,8 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="0dp"
+                android:visibility="invisible"
+
                 android:layout_weight="3"
                 android:src="@drawable/user_pacific" />
 
@@ -68,6 +70,7 @@
                 android:layout_height="40dp"
                 android:layout_marginTop="0dp"
                 android:layout_weight="3"
+                android:visibility="invisible"
                 android:src="@drawable/user_pratikshya" />
 
             <ImageView

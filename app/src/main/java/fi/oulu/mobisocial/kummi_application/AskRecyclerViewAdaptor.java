@@ -1,8 +1,6 @@
 package fi.oulu.mobisocial.kummi_application;
 
-import android.media.Image;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +8,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.List;
 
@@ -54,11 +49,11 @@ public class AskRecyclerViewAdaptor extends RecyclerView.Adapter<AskRecyclerView
     public void insertItemAt(HashMap<String,String> entry, int index) {
         dataSet.add(index, entry);
 
-        notifyDataSetChanged();
+        AskRecyclerViewAdaptor.this.notifyDataSetChanged();
     }
     public  void insertItem(HashMap<String,String> entry){
         dataSet.add(entry);
-        notifyDataSetChanged();
+         AskRecyclerViewAdaptor.this.notifyDataSetChanged();
     }
     public void deleteItem(int index) {
 
@@ -68,7 +63,7 @@ public class AskRecyclerViewAdaptor extends RecyclerView.Adapter<AskRecyclerView
 
     public void deleteItem(HashMap<String,String> entry) {
         dataSet.remove(entry);
-        notifyDataSetChanged();
+         AskRecyclerViewAdaptor.this.notifyDataSetChanged();
     }
     @Override
     public int getItemCount(){

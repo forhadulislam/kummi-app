@@ -51,7 +51,7 @@ public class AskFragment extends Fragment{
     Ask askMessage;
     private RequestQueue MyRequestQueue;
     private StringRequest MyStringRequest;
-
+    List<HashMap<String,String>> dummyData;
     public AskFragment(){
         // Required empty public constructor
     }
@@ -61,52 +61,41 @@ public class AskFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState){
 
         super.onCreate(savedInstanceState);
-        askRecyclerViewAdaptor=new AskRecyclerViewAdaptor(dummyData());
+       // askRecyclerViewAdaptor=new AskRecyclerViewAdaptor(dummyData());
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container,
                              Bundle savedInstanceState){
+        View view=inflater.inflate(R.layout.fragment_ask,container,false);
         // Inflate the layout for this fragment
-        askRecyclerViewAdaptor=new AskRecyclerViewAdaptor(dummyData());
-        return inflater.inflate(R.layout.fragment_ask,container,false);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState){
-        super.onActivityCreated(savedInstanceState);
-        recyclerView=(RecyclerView)getView().findViewById(R.id.ask_recycler_view);
+        recyclerView=(RecyclerView)view.findViewById(R.id.ask_recycler_view);
         recyclerViewLayoutManager=new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
 
         ArrayList<HashMap<String,String>> dataset=new ArrayList<>();
         messageDataSet=dataset;
-        askRecyclerViewAdaptor=new AskRecyclerViewAdaptor(dummyData());
-        recyclerView.setAdapter(askRecyclerViewAdaptor);
+
 
         // Message box
-        type_message_text = (EditText)getView().findViewById(R.id.type_message_text);
+        type_message_text = (EditText)view.findViewById(R.id.type_message_text);
 
         final int[] count={0};
-        sendMessageButton=(ImageView)getView().findViewById(R.id.type_message_send);
-        textMessage=(TextView)getView().findViewById(R.id.type_message_text);
+        sendMessageButton=(ImageView)view.findViewById(R.id.type_message_send);
+        textMessage=(TextView)view.findViewById(R.id.type_message_text);
 
         textMessage.requestFocus();
 
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(textMessage, InputMethodManager.SHOW_IMPLICIT);
-
+        getOnlineData();
         sendMessageButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                List<HashMap<String, String>> dataset = dummyData();
-                for (int i = 0; i < dataset.size(); i++) {
-                    HashMap<String, String> entry = dataset.get(i);
-                    askRecyclerViewAdaptor.insertItemAt(entry, i);
-                }
 
                 currentMessage = type_message_text.getText().toString().trim();
+                type_message_text.setText("");
 
                 askMessage = new Ask("123123", "nothing much");
                 RequestQueue MyRequestQueue = null;
@@ -129,12 +118,12 @@ public class AskFragment extends Fragment{
                     String url = "https://ruby-on-rails-rest-api-isadi.c9users.io/asks.json";
                     MyStringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                         @Override
-                    public void onResponse(String response) {
+                        public void onResponse(String response) {
                             //This code is executed if the server responds, whether or not the response contains data.
                             //The String 'response' contains the server's response.
                             Log.d("Response : ", response);
 
-                            askRecyclerViewAdaptor=new AskRecyclerViewAdaptor(dummyData());
+                            getOnlineData();
 
                         }
                     }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
@@ -166,13 +155,19 @@ public class AskFragment extends Fragment{
                             return params;
 
                         }
-                      };
-                        MyRequestQueue.add(MyStringRequest);
-                    }
-            }
+                    };
+                    MyRequestQueue.add(MyStringRequest);
+                }
+           }
         });
 
 
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
 
     }
 
@@ -182,11 +177,11 @@ public class AskFragment extends Fragment{
     }
 
 
-    private void demola(int entry){
-        List<HashMap<String,String>> dataset=dummyData();
-        HashMap<String,String> message=dataset.get(entry%dataset.size());
-        askRecyclerViewAdaptor.insertItem(message);
-    }
+//    private void demola(int entry){
+//        List<HashMap<String,String>> dataset=dummyData();
+//        HashMap<String,String> message=dataset.get(entry%dataset.size());
+//        askRecyclerViewAdaptor.insertItem(message);
+//    }
 
     /*private class AskDataProvider extends AsyncTask<String,Void,String> {
 
@@ -223,9 +218,9 @@ public class AskFragment extends Fragment{
         }
     }*/
 
-    private List<HashMap<String,String>> dummyData(){
+    private void getOnlineData(){
 
-        final ArrayList<HashMap<String,String>> dataset=new ArrayList<>();
+        dummyData=new ArrayList<>();
         HashMap<String,String> message=new HashMap<>();
         final String serverResponse;
 
@@ -262,9 +257,11 @@ public class AskFragment extends Fragment{
                         HashMap<String,String> cmessage=new HashMap<>();
                         cmessage.put("message",message);
                         cmessage.put("messageType",MESSAGE_TYPE_OUTGOING);
-                        dataset.add(cmessage);
-                    }
+                        dummyData.add(cmessage);
 
+                    }
+                    askRecyclerViewAdaptor=new AskRecyclerViewAdaptor(dummyData);
+                    recyclerView.setAdapter(askRecyclerViewAdaptor);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -305,7 +302,6 @@ public class AskFragment extends Fragment{
         // message.put("messageType",MESSAGE_TYPE_INCOMING);
         // message.put("messageType",MESSAGE_TYPE_OUTGOING);
 
-        return dataset;
     }
 
     @Override
