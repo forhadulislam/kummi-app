@@ -27,14 +27,17 @@ public class MainActivity extends FragmentActivity{
 
     public static final String REST_DB_API_KEY="aae81c5685e95a5cc268116b0a6bb0353033f";
     public static final String REST_DB_USERS_URL="https://kummi-ad21.restdb.io/rest/users";
+    public static final String REST_DB_USERS_LOGIN_URL="https://kummi-ad21.restdb.io/rest/users?q={ \"username\": \"<<username>>\", \"password\": \"<<password>>\" }&dir=-1&max=1";
     public static final String C9_DB_USERS_POST_URL="https://ruby-on-rails-rest-api-isadi.c9users.io/users";
     public static final String C9_DB_USERS_GET_URL="https://ruby-on-rails-rest-api-isadi.c9users.io/users/login";
+    public static final String REST_DB_USER_LOCATION_URL="https://kummi-ad21.restdb.io/rest/users/<UserId>/locations?sort=timeStamp&dir=-1&max=1";
+
     public static final String REST_DB_READ_USER_LOCATION="restdbuserLocationRead";
     public static final String REST_DB_READ_USERS="restdbusersRead";
     public static final String REST_DB_REGISTER="restdbregister";
     public static final String REST_DB_LOGIN="restdblogin";
     public static final String REST_DB_BOOKMARKS="bookmarks";
-    public static final String REST_DB_USER_LOCATION_URL="https://kummi-ad21.restdb.io/rest/users/<UserId>/locations?sort=timeStamp&dir=-1&max=1";
+
     public static SharedPreferences appSharePreference;
 
     @Override
@@ -129,11 +132,22 @@ public class MainActivity extends FragmentActivity{
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }
+
+    /**
+     * Saves a value into application share preference with a given key
+     * @param key
+     * @param value
+     */
     public static void saveToSharedPreference(String key, String value) {
 
         appSharePreference.edit().putString(key.toString(), value.toString()).apply();
     }
 
+    /**
+     * Retrieves from the application shared preference a value based on a give key
+     * @param key
+     * @return string
+     */
     public static String retrieveFromSharePreference(String key) {
 
         return appSharePreference.getString(key, "");

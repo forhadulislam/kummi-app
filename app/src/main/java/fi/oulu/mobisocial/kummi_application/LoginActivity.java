@@ -1,6 +1,7 @@
 package fi.oulu.mobisocial.kummi_application;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,14 +13,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 public class LoginActivity extends Activity{
 
@@ -85,6 +92,7 @@ public class LoginActivity extends Activity{
                 providedPassword=password;
                 providedUserName=username;
 //
+
                 if(!username.isEmpty()&&!password.isEmpty()){
                     String savedUsername=MainActivity.retrieveFromSharePreference(MainActivity.USERNAME_KEY);
                     String savedPassword=MainActivity.retrieveFromSharePreference(MainActivity.PASSWORD_KEY);
@@ -132,9 +140,64 @@ public class LoginActivity extends Activity{
 
     }
 
+    /**
+     * Logs in user
+     * Check online for existing of username and password
+     * Sync down into applications shared preference the other account info of users
+     * @param username
+     * @param password
+     */
     private void loginUser(String username,String password){
+        JsonArrayRequest request;
+         String url=MainActivity.REST_DB_USERS_LOGIN_URL.replace("<<username>>",username);
+         url=url.replace("<<password>>",password);
+        request=new JsonArrayRequest(url,new Response.Listener<JSONArray>(){
+            @Override
+            public void onResponse(JSONArray response){
+                MainActivity.saveToSharedPreference(MainActivity.USERNAME_KEY,providedUserName);
+                MainActivity.saveToSharedPreference(MainActivity.PASSWORD_KEY,providedPassword);
+                Toast.makeText(LoginActivity.this,"Login Successful",Toast.LENGTH_LONG).show();
+                //Todo: sync down other user information from online db
+                try{
+                    HashMap<String,String> onlineData=new JSONParser().passLoginUser(response);
+                    MainActivity.saveToSharedPreference(MainActivity.USER_ID_KEY,onlineData.get("_id"));
+                    MainActivity.saveToSharedPreference(MainActivity.EMAIL_KEY,onlineData.get("email"));
+                    MainActivity.saveToSharedPreference(MainActivity.FIRST_NAME_KEY,onlineData.get("firstname"));
+                    MainActivity.saveToSharedPreference(MainActivity.OTHERNAME_KEY,onlineData.get("otherNames"));
+                }catch(JSONException e){
 
-        LoginDataProvider dataProvider=new LoginDataProvider(MainActivity.REST_DB_LOGIN);
+                }
+                MainActivity.USER_LOGGED_IN=true;
+                setContentView(R.layout.activity_main);
+
+            }
+        },new Response.ErrorListener(){
+            @Override
+            public void onErrorResponse(VolleyError error){
+                String errorMessage=error.getMessage();
+                Toast.makeText(LoginActivity.this,error.getMessage(),Toast.LENGTH_LONG).show();
+
+            }
+        }){
+
+            /**
+             * Passing some request headers
+             * */
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError{
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json");
+                headers.put("x-apiKey",MainActivity.REST_DB_API_KEY);
+                //headers.put("cache-control","no-cache");
+
+                return headers;
+            }
+
+        };
+
+        getRequestQueue().add(request);
+
+        /*LoginDataProvider dataProvider=new LoginDataProvider(MainActivity.REST_DB_LOGIN);
         try{
             JSONObject params=new JSONObject();
             params.put("username",username);
@@ -145,7 +208,7 @@ public class LoginActivity extends Activity{
 
         }catch(JSONException e){
             e.printStackTrace();
-        }
+        }*/
     }
 
 

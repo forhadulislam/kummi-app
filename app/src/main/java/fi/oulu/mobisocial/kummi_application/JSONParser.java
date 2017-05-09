@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.PortUnreachableException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,11 @@ import java.util.List;
  */
 
 public class JSONParser {
+    /**
+     * Passes the polyline path between two LatLong
+     * @param jObject
+     * @return
+     */
     public List<List<HashMap<String,String>>> parsePath(JSONObject jObject){
         List<List<HashMap<String,String>>> routes=new ArrayList<>();
         JSONArray jRoutes=null;
@@ -86,6 +92,12 @@ public class JSONParser {
         return poly;
     }
 
+    /**
+     * Pass users JSON response from API call
+     * @param result
+     * @return
+     * @throws JSONException
+     */
     public List<HashMap<String,String>> parseUsers(JSONArray result) throws JSONException {
         List<HashMap<String,String>> users=new ArrayList<>();
 
@@ -106,6 +118,26 @@ public class JSONParser {
         return users;
     }
 
+    public HashMap<String,String> passLoginUser(JSONArray results) throws  JSONException{
+        HashMap<String,String> user=new HashMap<>();
+        if(results.length()>0){
+            JSONObject entry=results.getJSONObject(0);
+            user.put("_id",entry.getString("_id"));
+            user.put("email",entry.getString("email"));
+            user.put("active",entry.getString("active"));
+            user.put("password",entry.getString("password"));
+            user.put("firstname",entry.getString("firstname"));
+            user.put("otherNames",entry.getString("otherNames"));
+            user.put("username",entry.getString("username"));
+        }
+        return  user;
+    }
+    /**
+     * Pass a student's location  JSON response from API Call
+     * @param lo
+     * @return HasMap of key value pairs of student location
+     * @throws JSONException
+     */
     public HashMap<String,String> parseLocation(JSONArray lo) throws JSONException{
         HashMap<String,String> location=new HashMap<>();
         if(lo.length()>0){
@@ -118,6 +150,13 @@ public class JSONParser {
         }
         return location;
     }
+
+    /**
+     * Passes Bookmarked locations JSON response form API call
+     * @param lo
+     * @return
+     * @throws JSONException
+     */
     public List<HashMap<String,String>> parseBookMarks(JSONArray lo) throws JSONException{
         List<HashMap<String,String>> locations=new ArrayList<>();
 
