@@ -17,13 +17,14 @@
 
     <ImageView
 
+        android:id="@+id/imageView"
         android:layout_width="158dp"
         android:layout_height="98dp"
         android:layout_gravity="center"
         android:layout_marginBottom="30dp"
         android:layout_marginTop="10dp"
         android:layout_weight="0.11"
-        android:src="@drawable/kummi_image"/>
+        android:src="@drawable/kummi_image" />
 
     <TextView
         android:id="@+id/textView2"
@@ -36,6 +37,7 @@
         android:id="@+id/usernameText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="asare"
         android:ems="10"
         android:inputType="textPersonName"
 
@@ -51,6 +53,7 @@
         android:id="@+id/passwordText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="asare"
         android:inputType="textPassword"
 
         />

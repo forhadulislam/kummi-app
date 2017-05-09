@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,10 +15,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -34,15 +38,7 @@ public class LoginActivity extends Activity{
     private EditText usernameEditText, passwordEditText, firstNameEditText, othernamesEditText, emailEditText;
     private TextView gotoRegisterTextView;
     private String providedUserName, providedPassword, providedFirstName, providedOtherName, providedEmail, providedUserId;
-    private RequestQueue mRequestQueue;
 
-    public RequestQueue getRequestQueue(){
-        if (mRequestQueue == null) {
-            mRequestQueue = Volley.newRequestQueue(getApplicationContext());
-        }
-
-        return mRequestQueue;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -147,68 +143,50 @@ public class LoginActivity extends Activity{
      * @param username
      * @param password
      */
-    private void loginUser(String username,String password){
+    private void loginUser(final String username,final String password){
         JsonArrayRequest request;
-         String url=MainActivity.REST_DB_USERS_LOGIN_URL.replace("<<username>>",username);
-         url=url.replace("<<password>>",password);
-        request=new JsonArrayRequest(url,new Response.Listener<JSONArray>(){
+         String url="https://kummi-ad21.restdb.io/rest/users?q=";
+
+        String tag_json_obj = "json_obj_req";
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                url, null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("tag", response.toString());
+                        Toast.makeText(LoginActivity.this,response.toString(),Toast.LENGTH_LONG).show();
+                    }
+                }, new Response.ErrorListener() {
+
             @Override
-            public void onResponse(JSONArray response){
-                MainActivity.saveToSharedPreference(MainActivity.USERNAME_KEY,providedUserName);
-                MainActivity.saveToSharedPreference(MainActivity.PASSWORD_KEY,providedPassword);
-                Toast.makeText(LoginActivity.this,"Login Successful",Toast.LENGTH_LONG).show();
-                //Todo: sync down other user information from online db
-                try{
-                    HashMap<String,String> onlineData=new JSONParser().passLoginUser(response);
-                    MainActivity.saveToSharedPreference(MainActivity.USER_ID_KEY,onlineData.get("_id"));
-                    MainActivity.saveToSharedPreference(MainActivity.EMAIL_KEY,onlineData.get("email"));
-                    MainActivity.saveToSharedPreference(MainActivity.FIRST_NAME_KEY,onlineData.get("firstname"));
-                    MainActivity.saveToSharedPreference(MainActivity.OTHERNAME_KEY,onlineData.get("otherNames"));
-                }catch(JSONException e){
-
-                }
-                MainActivity.USER_LOGGED_IN=true;
-                setContentView(R.layout.activity_main);
-
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("tag", "Error: " + error.getMessage());
             }
-        },new Response.ErrorListener(){
+        }) {
             @Override
-            public void onErrorResponse(VolleyError error){
-                String errorMessage=error.getMessage();
-                Toast.makeText(LoginActivity.this,error.getMessage(),Toast.LENGTH_LONG).show();
-
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("username",username);
+                params.put("password",password);
+                return params;
             }
-        }){
 
             /**
              * Passing some request headers
              * */
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError{
+            public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<String, String>();
                 headers.put("Content-Type", "application/json");
-                headers.put("x-apiKey",MainActivity.REST_DB_API_KEY);
-                //headers.put("cache-control","no-cache");
-
+               headers.put("x-apiKey",MainActivity.REST_DB_API_KEY);
                 return headers;
             }
 
         };
 
-        getRequestQueue().add(request);
-
-        /*LoginDataProvider dataProvider=new LoginDataProvider(MainActivity.REST_DB_LOGIN);
-        try{
-            JSONObject params=new JSONObject();
-            params.put("username",username);
-            params.put("password",password);
-
-            dataProvider.execute(params.toString());
-
-
-        }catch(JSONException e){
-            e.printStackTrace();
-        }*/
+// Adding request to request queue
+        AppController.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
     }
 
 
