@@ -18,6 +18,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +35,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -101,7 +103,8 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
         bookmarksButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                showStudentsDialoag();
+                //showStudentsDialoag();
+                showBookMarks();
             }
         });
 
@@ -123,6 +126,7 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
     private GoogleMap meetMap;
     private LocationManager locationManager;
     public HashMap<Integer,LatLng> students;
+    public List<HashMap<String,String>> bookmarkList;
     public List<HashMap<String,String>> studentList;
     public static final int GEOLOCATION_PERMISSION_CODE=1234;
 
@@ -146,6 +150,7 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
             public void onMapLongClick(LatLng latLng){
 
                 showStudentsDialoag();
+
             }
 
         });
@@ -183,6 +188,7 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
                 .show();
     }
 
+    //private void showBookMarksDialog
     @Override
     public void onRequestPermissionsResult(int requestCode,@NonNull String[] permissions,@NonNull int[] grantResults){
         super.onRequestPermissionsResult(requestCode,permissions,grantResults);
@@ -212,6 +218,17 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
             marker.setTitle(title);
         if(snippet!=null)
             marker.setSnippet(snippet);
+        marker.showInfoWindow();
+    }
+
+    public void addMarker(LatLng point,String title,String snippet,float hue ){
+        Marker marker=addMarker(point);
+        if(title!=null)
+            marker.setTitle(title);
+        if(snippet!=null)
+            marker.setSnippet(snippet);
+
+        marker.setIcon(BitmapDescriptorFactory.defaultMarker(hue));
         marker.showInfoWindow();
     }
 
@@ -308,13 +325,21 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
                 return;
             }
 
+            RestDBDataReader dataReader= new RestDBDataReader(MainActivity.REST_DB_BOOKMARKS);
+            dataReader.execute(MainActivity.REST_DB_BOOKMARKS_URL);
+
         }catch(Exception e){
 
         }
     }
-//    public  void  showBookMarks(List){
-//
-//    }
+    public  void  showBookMarks(List<HashMap<String,String>> bookmarkList){
+        if(bookmarkList!=null){
+            for (HashMap<String, String> entry : bookmarkList) {
+                LatLng latLng=new LatLng(Double.valueOf(entry.get("latitude")),Double.valueOf(entry.get("longitude")));
+                addMarker(latLng,entry.get("name"),entry.get("description"),BitmapDescriptorFactory.HUE_GREEN);
+            }
+        }
+    }
     public Location GetLastKnowLocation(){
         try{
             if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
@@ -353,6 +378,7 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
     //<editor-fold desc="GoogleClientApi overrides">
     @Override
     public void onConnected(@Nullable Bundle bundle){
+        showBookMarks();
         ZoomToLastKnowLocation();
     }
 
@@ -440,8 +466,8 @@ public class MeetFragment extends Fragment implements OnMapReadyCallback, Google
                         break;
                     case MainActivity.REST_DB_BOOKMARKS:
                         List<HashMap<String,String>> bookmarks=null;
-                        bookmarks=parser.parseUsers(new JSONArray(data));
-
+                        bookmarkList=parser.parseBookMarks(new JSONArray(data));
+                        showBookMarks(bookmarkList);
                         break;
                 }
 

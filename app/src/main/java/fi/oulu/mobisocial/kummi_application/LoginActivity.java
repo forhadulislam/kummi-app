@@ -127,17 +127,19 @@ public class LoginActivity extends Activity{
 
     private void loginUser(String username,String password){
         LoginDataProvider dataProvider=new LoginDataProvider(MainActivity.REST_DB_LOGIN);
-        try{
-            JSONObject params=new JSONObject();
-            params.put("username",username);
-            params.put("password",password);
+//        try{
+//            JSONObject params=new JSONObject();
+//            params.put("username",username);
+//            params.put("password",password);
 
-            dataProvider.execute(params.toString());
+            String url=MainActivity.REST_DB_USER_LOGIN.replace("<username>",username);
+        url= url.replace("<password>",password);
+            dataProvider.execute(url);
 
 
-        }catch(JSONException e){
-            e.printStackTrace();
-        }
+//        }catch(JSONException e){
+//            e.printStackTrace();
+//        }
     }
 
     private void registerUser(String firstname,String otherNames,String username,String password,String email,String userId){
@@ -182,7 +184,7 @@ public class LoginActivity extends Activity{
                         HashMap<String,String> headers=new HashMap<>();
                         headers.put("x-apiKey",MainActivity.REST_DB_API_KEY);
                         //data=request.postLogin(MainActivity.REST_DB_USERS_URL,strings[0],headers);
-                        data=request.postLogin(MainActivity.C9_DB_USERS_POST_URL,strings[0],null);
+                        data=request.postLogin(MainActivity.REST_DB_USERS_URL,strings[0],headers);
                     }catch(IOException e){
                         e.printStackTrace();
                     }
@@ -191,8 +193,9 @@ public class LoginActivity extends Activity{
                     try{
                         HashMap<String,String> headers=new HashMap<>();
                         headers.put("x-apiKey",MainActivity.REST_DB_API_KEY);
-                        //data=request.postLogin(MainActivity.REST_DB_USERS_URL,strings[0],headers);
-                        data=request.postLogin(MainActivity.C9_DB_USERS_GET_URL,strings[0],null);
+                        headers.put("Content-Length","665");
+                        headers.put("Content-Length","application/json");
+                        data=request.readUrl(strings[0],headers);
                     }catch(IOException e){
 
                     }
@@ -230,6 +233,7 @@ public class LoginActivity extends Activity{
                         MainActivity.USER_LOGGED_IN=true;
                         setContentView(R.layout.activity_main);
                         //Todo: sync down other user information from online db
+
                         finish();
                     }else if(s.equals("NOT_FOUND")){
                         Toast.makeText(LoginActivity.this,"User Account not found. Have you registered?",Toast.LENGTH_LONG).show();

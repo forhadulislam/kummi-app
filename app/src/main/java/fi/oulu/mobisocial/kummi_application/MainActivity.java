@@ -15,6 +15,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 
 
 public class MainActivity extends FragmentActivity{
+
     public static  boolean USER_LOGGED_IN=false;
     private BottomNavigationView bottomNavigation;
 
@@ -27,6 +28,8 @@ public class MainActivity extends FragmentActivity{
 
     public static final String REST_DB_API_KEY="aae81c5685e95a5cc268116b0a6bb0353033f";
     public static final String REST_DB_USERS_URL="https://kummi-ad21.restdb.io/rest/users";
+    public static final String REST_DB_USER_LOGIN="https://kummi-ad21.restdb.io/rest/users?q={ \"username\": \"<username>\", \"password\": \"<password>\" }&dir=-1&max=1";
+    public static final String REST_DB_BOOKMARKS_URL="https://kummi-ad21.restdb.io/rest/bookmarklocations";
     public static final String C9_DB_USERS_POST_URL="https://ruby-on-rails-rest-api-isadi.c9users.io/users";
     public static final String C9_DB_USERS_GET_URL="https://ruby-on-rails-rest-api-isadi.c9users.io/users/login";
     public static final String REST_DB_READ_USER_LOCATION="restdbuserLocationRead";
