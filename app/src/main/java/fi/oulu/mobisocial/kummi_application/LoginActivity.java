@@ -12,6 +12,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,7 +27,15 @@ public class LoginActivity extends Activity{
     private EditText usernameEditText, passwordEditText, firstNameEditText, othernamesEditText, emailEditText;
     private TextView gotoRegisterTextView;
     private String providedUserName, providedPassword, providedFirstName, providedOtherName, providedEmail, providedUserId;
+    private RequestQueue mRequestQueue;
 
+    public RequestQueue getRequestQueue(){
+        if (mRequestQueue == null) {
+            mRequestQueue = Volley.newRequestQueue(getApplicationContext());
+        }
+
+        return mRequestQueue;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -122,6 +133,7 @@ public class LoginActivity extends Activity{
     }
 
     private void loginUser(String username,String password){
+
         LoginDataProvider dataProvider=new LoginDataProvider(MainActivity.REST_DB_LOGIN);
         try{
             JSONObject params=new JSONObject();
@@ -136,28 +148,6 @@ public class LoginActivity extends Activity{
         }
     }
 
-    private void registerUser(String firstname,String otherNames,String username,String password,String email,String userId){
-        LoginDataProvider dataProvider=new LoginDataProvider(MainActivity.REST_DB_REGISTER);
-        String encodeBody="";
-
-        try{
-            JSONObject params=new JSONObject();
-            params.put("username",username);
-            params.put("password",password);
-            params.put("firstname",firstname);
-            params.put("otherNames",otherNames);
-            params.put("email",email);
-            params.put("_id",userId);
-            params.put("active",true);
-
-            dataProvider.execute(params.toString());
-
-
-        }catch(JSONException e){
-            e.printStackTrace();
-        }
-
-    }
 
     private class LoginDataProvider extends AsyncTask<String,Void,String>{
 
